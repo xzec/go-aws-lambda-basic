@@ -24,25 +24,23 @@ func main() {
 		log.Fatalf("Failed to fetch Quote API: %v.", err)
 	}
 
-	var buf bytes.Buffer
-	if _, err := io.Copy(&buf, res.Body); err != nil {
-		log.Fatalf("Failed to read response body: %v", err)
-	}
-
-	sanitizedJSON := buf.Bytes()
-	sanitizedJSON = bytes.ReplaceAll(sanitizedJSON, []byte(`\'`), []byte(`'`))
-
 	defer func(Body io.ReadCloser) {
-		if cErr := Body.Close(); cErr != nil {
-			log.Fatalf("Failed to close the response body: %v.", cErr)
+		if err = Body.Close(); err != nil {
+			log.Fatalf("Failed to close the response body: %v.", err)
 		}
 	}(res.Body)
 
-	var q Quote
-	fmt.Printf("%s\n", sanitizedJSON)
-	if qErr := json.Unmarshal(sanitizedJSON, &q); qErr != nil {
-		log.Fatalf("Failed to unmarshal res body: %v.", qErr)
+	raw, err := io.ReadAll(res.Body)
+	if err != nil {
+		log.Fatalf("Failed to read response body: %v", err)
 	}
 
-	fmt.Println(q)
+	sanitized := bytes.ReplaceAll(raw, []byte(`\'`), []byte(`'`))
+
+	var quote Quote
+	if err = json.Unmarshal(sanitized, &quote); err != nil {
+		log.Fatalf("Failed to unmarshal res body: %v.", err)
+	}
+
+	fmt.Println(quote)
 }

@@ -23,6 +23,10 @@ type MyEvent struct {
 	Name string `json:"name"`
 }
 
+func (e MyEvent) String() string {
+	return fmt.Sprintf("Event name: %v", e.Name)
+}
+
 func HandleLambdaEvent(ctx context.Context, event *MyEvent) (*Quote, error) {
 	if event == nil {
 		return nil, fmt.Errorf("received nil event")

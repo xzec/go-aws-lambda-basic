@@ -31,7 +31,7 @@ func HandleLambdaEvent(ctx context.Context, event *MyEvent) (*Quote, error) {
 	if event == nil {
 		return nil, fmt.Errorf("received nil event")
 	}
-	fmt.Printf("Received an event %v\n", event)
+	fmt.Println(event)
 
 	const quoteApiEndpoint = "https://api.forismatic.com/api/1.0/?method=getQuote&key=111111&format=json&lang=en"
 	res, err := http.Get(quoteApiEndpoint)
